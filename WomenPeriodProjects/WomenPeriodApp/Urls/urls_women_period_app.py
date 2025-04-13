@@ -1,6 +1,7 @@
 from django.urls import path
 from WomenPeriodApp.Apis.Registros.Usuarios import *
 from WomenPeriodApp.Apis.Registros.Operaciones import *
+from WomenPeriodApp.Apis.Registros.RegistroVersiones import *
 from WomenPeriodApp.Apis.Listados.Api_listados import *
 from WomenPeriodApp.Apis.Notificaciones.Api_Notificaciones import *
 urlpatterns = [
@@ -10,6 +11,7 @@ urlpatterns = [
     path('EnvioNotificacion/',EnvioNotificacion.as_view(),name="EnvioNotificacion"),
     path('EnvioNotificacionesDiasPrevios/',EnvioNotificacionesDiasPrevios.as_view(),name="EnvioNotificacionesDiasPrevios"), 
     path('EnvioNotificacionPrueba/',EnvioNotificacionPrueba.as_view(),name="EnvioNotificacionPrueba"), 
+    path('RegistroVersion/',RegistroVersion.as_view(),name="RegistroVersion"), 
     path('ComprobarSesionUsuario/',ComprobarSesionUsuario,name="ComprobarSesionUsuario"), 
     path('DatosCalendario/',DatosCalendario,name='DatosCalendario'),
 

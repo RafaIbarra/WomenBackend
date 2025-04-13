@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import platform
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,11 +79,14 @@ WSGI_APPLICATION = 'WomenPeriodProjects.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+if platform.system() == 'Linux':
+    DATA_BASE = 'womenperiod'
+else:
+    DATA_BASE = 'WomenPeriod'
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'womenperiod',
+            'NAME': DATA_BASE,
             'USER':'postgres',
             'PASSWORD':'rafael86',
             'HOST':'localhost',
