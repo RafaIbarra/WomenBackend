@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import calendar
 from datetime import datetime
+from django.http import HttpResponse
 # Create your views here.
 
 class CalendarioView(APIView):
@@ -172,4 +173,16 @@ class GenerarCalendario(APIView):
             orden +=1
             
         return Response(calendario_ins, status=status.HTTP_200_OK)
+    
+class Home(APIView):
+    
+    
+    def get(self, request, *args, **kwargs):
+        # html_content = "<html><body><h1>Bienvenido</h1></body></html>"
+        # # return Response('Bienvenido', status=status.HTTP_200_OK)
+        # return Response(html_content, status=status.HTTP_200_OK, content_type="text/html")
+    
+        # html_content = "<html><body><h1>Bienvenido</h1></body></html>"
+        html = render(request, 'home2.html')
+        return HttpResponse(html, status=status.HTTP_200_OK, content_type="text/html")
     

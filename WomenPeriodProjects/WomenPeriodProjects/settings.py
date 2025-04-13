@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(s^i*47(4$&n$j3ml^8+kjd_c3y+%!(sti303kysn=85l(r+bj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.103','192.168.1.105']
+ALLOWED_HOSTS = ['192.168.1.103','192.168.1.105','127.0.0.1','wom.rafaelibarra.xyz']
 
 
 # Application definition
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'WomenPeriodProjects.wsgi.application'
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'WomenPeriod',
+            'NAME': 'womenperiod',
             'USER':'postgres',
             'PASSWORD':'rafael86',
             'HOST':'localhost',

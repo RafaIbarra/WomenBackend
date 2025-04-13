@@ -3,11 +3,13 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from datetime import datetime
-from WomenPeriodApp.models import Calendario,Meses,CalendarioDias,DiasSemana
+from WomenPeriodApp.models import Calendario,Meses,CalendarioDias,DiasSemana,NivelIntensidad,TipoMarca
 from WomenPeriodApp.Serializadores.MesesSerializers import MesesSerializers
 from WomenPeriodApp.Serializadores.DiasSemanaSerializers import DiasSemanaSerializers
 from WomenPeriodApp.Serializadores.CalendarioSerializers import CalendarioSerializers
 from WomenPeriodApp.Serializadores.CalendarioDiasSerializers import CalendarioDiasSerializers
+from WomenPeriodApp.Serializadores.NivelIntensidadSerializers import NivelIntensidadSerializers
+from WomenPeriodApp.Serializadores.TipoMarcaSerializers import TipoMarcaSerializers
 import calendar
 from django.db.models import Q
 class GenerarMeses(APIView):
@@ -42,9 +44,11 @@ class GenerarMeses(APIView):
             n=n+1
             if meses_serializer.is_valid():
                 meses_serializer.save()
-                return Response(meses_serializer.data,status= status.HTTP_400_BAD_REQUEST)
+                
             else:
-                return Response({'error':meses_serializer.errors},status= status.HTTP_400_BAD_REQUEST)
+                print(meses_serializer.errors)
+            
+        return Response([],status= status.HTTP_200_OK)
             
 class GenerarDias(APIView):
     def get(self, request, *args, **kwargs):
@@ -205,6 +209,65 @@ def ProcesarCalendario(request):
         month +=1
     
     return Response('calendario_ins', status=status.HTTP_200_OK)
+
+class CargaReferenciales(APIView):
+    def get(self, request, *args, **kwargs):
+        data_list = []
+        
+        # id= models.AutoField(primary_key=True, serialize=False)
+        # NombreIntensidad=models.CharField(max_length=100,blank=False)
+        # NumeroNivel=models.IntegerField()
+        # FechaRegistro=models.DateTimeField("fecha registro")
+        c=1
+        while c <4:
+            nivel=""
+            if c==1:
+                nivel="Elevado"
+            if c==2:
+                nivel="Medio"
+            if c==3:
+                nivel="Bajo"
+            datasave={
+                "id":  0,
+                "NombreIntensidad": nivel,
+                "NumeroNivel":c,
+                "FechaRegistro": datetime.now()
+                
+            }
+            data_list.append(datasave)
+            
+            dias_serializer=NivelIntensidadSerializers(data=datasave)
+            c +=1
+            if dias_serializer.is_valid():
+                dias_serializer.save()
+                
+            else:
+                return Response({'error':dias_serializer.errors},status= status.HTTP_400_BAD_REQUEST)
+        i=1
+        while i<3:
+            if i==1:
+                marca="Roja"
+            if i==2:
+                marca="Marron"
+            datasave={
+                "id":  0,
+                "NombreTipoMarca": marca,
+                "FechaRegistro": datetime.now()
+                
+            }
+            data_list.append(datasave)
+            
+            dias_serializer=TipoMarcaSerializers(data=datasave)
+            i +=1
+            if dias_serializer.is_valid():
+                dias_serializer.save()
+                
+            else:
+                return Response({'error':dias_serializer.errors},status= status.HTTP_400_BAD_REQUEST)
+
+
+            
+        return Response({'dias Generados'},status= status.HTTP_200_OK)
 
 
 def control_existencia(id_calen,dia,numeromes):

@@ -22,13 +22,12 @@ from WomenPeriodApp.Apis.Listados.Api_listados import *
 # from WomenPeriodApp.Urls.urls_women_period_app import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+    path('',Home.as_view(),name="Home"),
     path('CalendarioView/',CalendarioView.as_view(),name="CalendarioView"),
-    path('GenerarCalendario/',GenerarCalendario().as_view(),name="GenerarCalendario"),
     path('GenerarMeses/',GenerarMeses().as_view(),name="GenerarMeses"),
     path('GenerarDias/',GenerarDias().as_view(),name="GenerarDias"),
     path('ProcesarCalendario/',ProcesarCalendario,name='ProcesarCalendario'),
-    
+    path('CargaReferenciales/',CargaReferenciales().as_view(),name="CargaReferenciales"),
 
     path('api/',include("WomenPeriodApp.Urls.urls_women_period_app")), 
 ]
