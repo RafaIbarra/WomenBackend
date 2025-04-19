@@ -27,6 +27,8 @@ SECRET_KEY = 'django-insecure-(s^i*47(4$&n$j3ml^8+kjd_c3y+%!(sti303kysn=85l(r+bj
 DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.103','192.168.1.105','127.0.0.1','wom.rafaelibarra.xyz']
+CSRF_TRUSTED_ORIGINS = ['https://wom.rafaelibarra.xyz']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'WomenPeriodApp',
+    'django_celery_beat',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',  
     'rest_framework_simplejwt.token_blacklist',
@@ -137,3 +140,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # URL de Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Guardar resultados en Redis
+CELERY_ACCEPT_CONTENT = ['json']  # Formatos aceptados
+CELERY_TASK_SERIALIZER = 'json'  # Serializador para tareas
+CELERY_RESULT_SERIALIZER = 'json'  # Serializador para resultados
+CELERY_TIMEZONE = 'America/Asuncion'  # Ajusta a tu zona horaria
+CELERY_ENABLE_UTC = True  # Usar UTC como referencia
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

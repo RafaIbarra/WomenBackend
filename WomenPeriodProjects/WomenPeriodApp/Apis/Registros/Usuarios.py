@@ -176,7 +176,7 @@ class Login(TokenObtainPairView):
         password = request.data.get('password', '')
         version = request.data.get('version', '')
         pushtoken = request.data.get('pushtoken', '')
-        
+        print(f'el pushtoken al iniciar sesion es {pushtoken}')
         consulta_version=Versiones.objects.filter(estado__exact=1).values()
         version_sistema=(consulta_version[0]['version']).strip()
         link_descarga=(consulta_version[0]['link_descarga']).strip()

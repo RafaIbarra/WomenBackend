@@ -78,22 +78,52 @@ class EnvioNotificacionPrueba(TokenObtainPairView):
     def get(self, request, *args, **kwargs):
         
         
-        data_usuarios=Usuarios.objects.filter(user_name__exact='rafael').values()
+        data_usuarios=Usuarios.objects.all().values()
         if data_usuarios:
             token=data_usuarios[0]['push_token']
             usuario=data_usuarios[0]['user_name']
-
-            message = {
-                'to': token,
-                'sound': 'default',
-                'title': (f'¡Hola {usuario}!'),
-                'body': 'Perdón! Esta es solo una notificacion de prueba',
-            }
+            print(token)
+            # message = {
+            #     'to': token,
+            #     'sound': 'default',
+            #     'title': (f'¡Hola {usuario}!'),
+            #     'body': 'Perdón! Esta es solo una notificacion de prueba',
+            # }
+            # try:
+            #     response = requests.post('https://exp.host/--/api/v2/push/send', json=message)
+            #     response.raise_for_status()
+            #     print('se envio sin errores')
+            # except requests.exceptions.RequestException as e:
+            #     print(f'Error al enviar notificación a {token}: {e}')
             try:
-                response = requests.post('https://exp.host/--/api/v2/push/send', json=message)
-                response.raise_for_status()
+    # Verificar token primero
                 
-            except requests.exceptions.RequestException as e:
-                print(f'Error al enviar notificación a {token}: {e}')
+                
+                response = requests.post(
+                    'https://exp.host/--/api/v2/push/send',
+                    json={
+                        'to': token,
+                        'title': f'¡Hola {usuario}!',
+                        'body': 'Notificación de prueba',
+                        'sound': 'default',
+                        'channelId': 'default',  # Importante para Android 8+
+                        'priority': 'high',     # Prioridad alta para Android
+                        'ttl': 60,             # Tiempo de vida en segundos
+                    },
+                    timeout=15
+                )
+                
+                response_data = response.json()
+                print(f"Respuesta del servidor: {response_data}")
+                
+                if response_data.get('data', {}).get('status') == 'ok':
+                    print("Notificación aceptada por el servidor de Expo")
+                else:
+                    print(f"Posible problema: {response_data}")
+                
+            except Exception as e:
+                print(f"Error completo: {str(e)}")
+                if hasattr(e, 'response') and e.response:
+                    print(f"Contenido de error: {e.response.text}")
         
         return Response({'vacio'},status= status.HTTP_200_OK)
