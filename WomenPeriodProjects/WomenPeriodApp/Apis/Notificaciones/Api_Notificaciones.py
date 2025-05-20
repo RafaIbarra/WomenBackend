@@ -39,7 +39,9 @@ class EnvioNotificacionesDiasPrevios(TokenObtainPairView):
                     ).values(
             'user_id','DesdeDia__ValorFecha','user__user_name','user__push_token', 'cantidad_dias','fecha_aviso'
             )
+        print(marcas_usuario)
         for item in marcas_usuario:
+            
             fecha_marca = item["DesdeDia__ValorFecha"]
             fecha_aviso = item["fecha_aviso"]
 
@@ -67,10 +69,11 @@ class EnvioNotificacionesDiasPrevios(TokenObtainPairView):
                     
                 except requests.exceptions.RequestException as e:
                     print(f'Error al enviar notificación a {push_token}: {e}')
+            
 
             
             
-        return Response([],status= status.HTTP_200_OK)
+        return Response([{'dta':'sin'}],status= status.HTTP_200_OK)
     
 class EnvioNotificacionPrueba(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -79,51 +82,74 @@ class EnvioNotificacionPrueba(TokenObtainPairView):
         
         
         data_usuarios=Usuarios.objects.all().values()
-        if data_usuarios:
-            token=data_usuarios[0]['push_token']
-            usuario=data_usuarios[0]['user_name']
-            print(token)
-            # message = {
-            #     'to': token,
-            #     'sound': 'default',
-            #     'title': (f'¡Hola {usuario}!'),
-            #     'body': 'Perdón! Esta es solo una notificacion de prueba',
-            # }
-            # try:
-            #     response = requests.post('https://exp.host/--/api/v2/push/send', json=message)
-            #     response.raise_for_status()
-            #     print('se envio sin errores')
-            # except requests.exceptions.RequestException as e:
-            #     print(f'Error al enviar notificación a {token}: {e}')
-            try:
-    # Verificar token primero
+        print(data_usuarios)
+        for usuario_data in data_usuarios:
+            token = usuario_data['push_token']
+            usuario = usuario_data['user_name']
+            
+            if token:  # Verificar que el token no esté vacío
+                try:
+                    response = requests.post(
+                        'https://exp.host/--/api/v2/push/send',
+                        json={
+                            'to': token,
+                            'title': f'¡Hola {usuario}!',
+                            'body': 'Disculpa, ignora este mensaje, es una notificacion de prueba',
+                            'sound': 'default',
+                            'channelId': 'default',
+                            'priority': 'high',
+                            'ttl': 60,
+                        },
+                        timeout=15
+                    )
+                    
+                    response_data = response.json()
+                    print(f"Respuesta para {usuario}: {response_data}")
+                    
+                    if response_data.get('data', {}).get('status') == 'ok':
+                        print(f"Notificación aceptada para {usuario}")
+                    else:
+                        print(f"Posible problema con {usuario}: {response_data}")
+                        
+                except Exception as e:
+                    print(f"Error al enviar a {usuario}: {str(e)}")
+                    if hasattr(e, 'response') and e.response:
+                        print(f"Contenido de error: {e.response.text}")
+            else:
+                print(f"El usuario {usuario} no tiene token de notificación")
+        # if data_usuarios:
+        #     token=data_usuarios[0]['push_token']
+        #     usuario=data_usuarios[0]['user_name']
+            
+        #     try:
+    
                 
                 
-                response = requests.post(
-                    'https://exp.host/--/api/v2/push/send',
-                    json={
-                        'to': token,
-                        'title': f'¡Hola {usuario}!',
-                        'body': 'Notificación de prueba',
-                        'sound': 'default',
-                        'channelId': 'default',  # Importante para Android 8+
-                        'priority': 'high',     # Prioridad alta para Android
-                        'ttl': 60,             # Tiempo de vida en segundos
-                    },
-                    timeout=15
-                )
+        #         response = requests.post(
+        #             'https://exp.host/--/api/v2/push/send',
+        #             json={
+        #                 'to': token,
+        #                 'title': f'¡Hola {usuario}!',
+        #                 'body': 'Notificación de prueba',
+        #                 'sound': 'default',
+        #                 'channelId': 'default',  # Importante para Android 8+
+        #                 'priority': 'high',     # Prioridad alta para Android
+        #                 'ttl': 60,             # Tiempo de vida en segundos
+        #             },
+        #             timeout=15
+        #         )
                 
-                response_data = response.json()
-                print(f"Respuesta del servidor: {response_data}")
+        #         response_data = response.json()
+        #         print(f"Respuesta del servidor: {response_data}")
                 
-                if response_data.get('data', {}).get('status') == 'ok':
-                    print("Notificación aceptada por el servidor de Expo")
-                else:
-                    print(f"Posible problema: {response_data}")
+        #         if response_data.get('data', {}).get('status') == 'ok':
+        #             print("Notificación aceptada por el servidor de Expo")
+        #         else:
+        #             print(f"Posible problema: {response_data}")
                 
-            except Exception as e:
-                print(f"Error completo: {str(e)}")
-                if hasattr(e, 'response') and e.response:
-                    print(f"Contenido de error: {e.response.text}")
+        #     except Exception as e:
+        #         print(f"Error completo: {str(e)}")
+        #         if hasattr(e, 'response') and e.response:
+        #             print(f"Contenido de error: {e.response.text}")
         
         return Response({'vacio'},status= status.HTTP_200_OK)

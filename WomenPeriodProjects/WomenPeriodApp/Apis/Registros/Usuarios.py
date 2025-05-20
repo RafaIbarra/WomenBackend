@@ -180,42 +180,13 @@ class Login(TokenObtainPairView):
         consulta_version=Versiones.objects.filter(estado__exact=1).values()
         version_sistema=(consulta_version[0]['version']).strip()
         link_descarga=(consulta_version[0]['link_descarga']).strip()
-
+        user_sesion=user_name
         if 'version' not in request.data:
             
             
 
             consultausuarios=Usuarios.objects.filter(user_name__exact=user_name).values()
             
-
-            # Nombre = str(consultausuarios[0]['nombre_usuario']) + '; ' + str(consultausuarios[0]['apellido_usuario'])
-            
-            # Asunto='Actualizacion de Sistema, se adjunta link de descarga'
-            # Mensaje=link_descarga
-
-            # html_content = render_to_string('archivo.html', 
-            #                                 {'Nombre': Nombre, 
-            #                                 'user_name': user_name,
-            #                                 'Asunto':Asunto,
-            #                                 'Mensaje':Mensaje
-            #                                 })
-            
-            # text_content = strip_tags(html_content)
-            # subject = 'Actualizacion de la Aplicacion'
-            # from_email = 'mytaxesapp@gmail.com'
-            # to_email = str(consultausuarios[0]['correo']) 
-            
-            # email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-            # email.attach_alternative(html_content, 'text/html')
-            # email.send()
-
-            # data_errores={
-            # 'mensaje':'Debe actualizar la version, se envio un correo a ' + str(consultausuarios[0]['correo']) ,
-            # 'Version actual':version_sistema,
-            # 'link':link_descarga,
-            
-            # }
-
             mensaje='Debe actualizar la version, se envio un correo a, ' + str(consultausuarios[0]['correo']) +', con el link de descarga'
 
             return Response({'error': mensaje}, status=status.HTTP_400_BAD_REQUEST)
@@ -283,7 +254,7 @@ class Login(TokenObtainPairView):
                         
                             login_serializer = self.serializer_class(data=request.data)
                             if login_serializer.is_valid():
-                                profile, created = Usuarios.objects.get_or_create(user_name=user_name)
+                                profile, created = Usuarios.objects.get_or_create(user_name=user_sesion)
                                 profile.push_token = pushtoken
                                 # profile.ultima_conexion = timezone.now().date()
                                 profile.save()
