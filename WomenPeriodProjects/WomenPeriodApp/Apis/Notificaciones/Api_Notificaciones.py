@@ -39,7 +39,7 @@ class EnvioNotificacionesDiasPrevios(TokenObtainPairView):
                     ).values(
             'user_id','DesdeDia__ValorFecha','user__user_name','user__push_token', 'cantidad_dias','fecha_aviso'
             )
-        print(marcas_usuario)
+        
         for item in marcas_usuario:
             
             fecha_marca = item["DesdeDia__ValorFecha"]
@@ -63,12 +63,16 @@ class EnvioNotificacionesDiasPrevios(TokenObtainPairView):
                 'title': (f'¡Hola {user_name}!'),
                 'body': (f'Te recordamos que faltan {cantidad_dias} {msg_dia} para un nuevo registro desde que marcaste como inicio el dia {fecha_marca}'),
                 }
+                print(f'es hoy para {user_name}')
                 try:
                     response = requests.post('https://exp.host/--/api/v2/push/send', json=message)
                     response.raise_for_status()
                     
                 except requests.exceptions.RequestException as e:
-                    print(f'Error al enviar notificación a {push_token}: {e}')
+                     print(f'Error al enviar notificación a {push_token}: {e}')
+            else:
+                 print(f'{user_name} su fecha es {fecha_aviso}')
+            
             
 
             
@@ -82,7 +86,7 @@ class EnvioNotificacionPrueba(TokenObtainPairView):
         
         
         data_usuarios=Usuarios.objects.all().values()
-        print(data_usuarios)
+        
         for usuario_data in data_usuarios:
             token = usuario_data['push_token']
             usuario = usuario_data['user_name']
@@ -104,7 +108,7 @@ class EnvioNotificacionPrueba(TokenObtainPairView):
                     )
                     
                     response_data = response.json()
-                    print(f"Respuesta para {usuario}: {response_data}")
+                    
                     
                     if response_data.get('data', {}).get('status') == 'ok':
                         print(f"Notificación aceptada para {usuario}")
